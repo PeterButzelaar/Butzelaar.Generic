@@ -67,6 +67,20 @@ namespace Butzelaar.Generic.Logging.Test
             Assert.AreEqual(GlobalContext.Properties["details"], string.Empty);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(NullReferenceException))]
+        public void GetLogMethodFromLevel_LogNull()
+        {
+           Logger.GetLogMethodFromLevel(null, Level.Error);
+        }
+
+        [TestMethod]
+        public void GetLogMethodFromLevel_LevelDebug()
+        {
+            var logger = LogManager.GetLogger(string.Empty);
+            var logMethod = Logger.GetLogMethodFromLevel(logger, Level.Debug);
+        }
+
         #endregion
     }
 }
