@@ -1,7 +1,7 @@
-﻿using Butzelaar.Generic.Logging.Enumeration;
-using log4net;
+﻿using System;
+using Butzelaar.Generic.Logging.Enumeration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+using log4net;
 
 namespace Butzelaar.Generic.Logging.Test
 {
@@ -25,7 +25,7 @@ namespace Butzelaar.Generic.Logging.Test
         [TestMethod]
         public void LogDebug_MessageLogger()
         {
-            Logger.Log(Level.Debug, this.GetType().Assembly.GetName().Name, "This is a debug test");
+            Logger.Log(Level.Debug, GetType().Assembly.GetName().Name, "This is a debug test");
         }
 
         [TestMethod]
@@ -47,14 +47,14 @@ namespace Butzelaar.Generic.Logging.Test
         [TestMethod]
         public void GetCallingAssembly_LogginTest()
         {
-            var retVal = Logger.GetCallingAssemblyName();
+            string retVal = Logger.GetCallingAssemblyName();
             Assert.AreEqual("Butzelaar.Generic.Logging.Test", retVal);
         }
 
         [TestMethod]
         public void SetDetailsProperty_TextDetails()
         {
-            var details = "Test details";
+            const string details = "Test details";
             Logger.SetDetailsProperty(details);
             Assert.AreEqual(GlobalContext.Properties["details"], details);
         }
@@ -62,23 +62,22 @@ namespace Butzelaar.Generic.Logging.Test
         [TestMethod]
         public void SetDetailsProperty_NullDetails()
         {
-            string details = null;
-            Logger.SetDetailsProperty(details);
+            Logger.SetDetailsProperty(null);
             Assert.AreEqual(GlobalContext.Properties["details"], string.Empty);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NullReferenceException))]
+        [ExpectedException(typeof (NullReferenceException))]
         public void GetLogMethodFromLevel_LogNull()
         {
-           Logger.GetLogMethodFromLevel(null, Level.Error);
+            Logger.GetLogMethodFromLevel(null, Level.Error);
         }
 
         [TestMethod]
         public void GetLogMethodFromLevel_LevelDebug()
         {
-            var logger = LogManager.GetLogger(string.Empty);
-            var logMethod = Logger.GetLogMethodFromLevel(logger, Level.Debug);
+            ILog logger = LogManager.GetLogger(string.Empty);
+            Logger.GetLogMethodFromLevel(logger, Level.Debug);
         }
 
         #endregion

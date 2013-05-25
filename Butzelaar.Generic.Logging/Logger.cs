@@ -1,13 +1,13 @@
-﻿using Butzelaar.Generic.Logging.Enumeration;
-using log4net;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Reflection;
+using Butzelaar.Generic.Logging.Enumeration;
+using log4net;
 
 namespace Butzelaar.Generic.Logging
 {
     /// <summary>
-    /// Wrapper class for the log4net framework
+    ///     Wrapper class for the log4net framework
     /// </summary>
     public static class Logger
     {
@@ -35,7 +35,7 @@ namespace Butzelaar.Generic.Logging
         }
 
         /// <summary>
-        /// Writes debug information
+        ///  Writes debug information
         /// </summary>
         /// <param name="level">The level.</param>
         /// <param name="message">The message.</param>
@@ -43,12 +43,12 @@ namespace Butzelaar.Generic.Logging
         /// <param name="ex">The exception.</param>
         public static void Log(Level level, string message, string details, Exception ex)
         {
-            var logger = GetCallingAssemblyName();
+            string logger = GetCallingAssemblyName();
 
             SetDetailsProperty(details);
             SetStackTraceProperty();
-            var loggerObject = LogManager.GetLogger(logger);
-            var logMethod = GetLogMethodFromLevel(loggerObject, level);
+            ILog loggerObject = LogManager.GetLogger(logger);
+            Action<object, Exception> logMethod = GetLogMethodFromLevel(loggerObject, level);
 
             logMethod(message, ex);
         }
@@ -58,10 +58,10 @@ namespace Butzelaar.Generic.Logging
         #region Helpers
 
         /// <summary>
-        /// Gets the name of the calling assembly.
+        ///     Gets the name of the calling assembly.
         /// </summary>
         /// <returns>
-        /// The name of the calling assembly
+        ///     The name of the calling assembly
         /// </returns>
         internal static string GetCallingAssemblyName()
         {
@@ -69,7 +69,7 @@ namespace Butzelaar.Generic.Logging
         }
 
         /// <summary>
-        /// Sets the details property.
+        ///     Sets the details property.
         /// </summary>
         /// <param name="details">The details.</param>
         internal static void SetDetailsProperty(string details)
@@ -78,30 +78,35 @@ namespace Butzelaar.Generic.Logging
         }
 
         /// <summary>
-        /// Sets the stack trace property.
+        ///     Sets the stack trace property.
         /// </summary>
-        internal static void SetStackTraceProperty()
+        private static void SetStackTraceProperty()
         {
             GlobalContext.Properties["StackTrace"] = new StackTrace();
         }
 
         /// <summary>
-        /// Gets the log method from level.
+        ///     Gets the log method from level.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="level">The level.</param>
         /// <returns>
-        /// The method used for logging
+        ///     The method used for logging
         /// </returns>
         internal static Action<object, Exception> GetLogMethodFromLevel(ILog logger, Level level)
         {
             switch (level)
             {
-                case Level.Debug: return logger.Debug;
-                case Level.Info: return logger.Info;
-                case Level.Warning: return logger.Warn;
-                case Level.Error: return logger.Error;
-                case Level.Fatal: return logger.Fatal;
+                case Level.Debug:
+                    return logger.Debug;
+                case Level.Info:
+                    return logger.Info;
+                case Level.Warning:
+                    return logger.Warn;
+                case Level.Error:
+                    return logger.Error;
+                case Level.Fatal:
+                    return logger.Fatal;
             }
 
             throw new ArgumentException(String.Format("Level specified not valid: {0}", level.ToString()));
