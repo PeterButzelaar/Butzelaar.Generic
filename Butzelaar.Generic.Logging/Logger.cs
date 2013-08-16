@@ -43,12 +43,12 @@ namespace Butzelaar.Generic.Logging
         /// <param name="ex">The exception.</param>
         public static void Log(Level level, string message, string details, Exception ex)
         {
-            string logger = GetCallingAssemblyName();
+            var logger = GetCallingAssemblyName();
 
             SetDetailsProperty(details);
             SetStackTraceProperty();
-            ILog loggerObject = LogManager.GetLogger(logger);
-            Action<object, Exception> logMethod = GetLogMethodFromLevel(loggerObject, level);
+            var loggerObject = LogManager.GetLogger(logger);
+            var logMethod = GetLogMethodFromLevel(loggerObject, level);
 
             logMethod(message, ex);
         }
