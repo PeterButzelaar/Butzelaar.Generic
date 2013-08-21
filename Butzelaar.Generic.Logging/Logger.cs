@@ -109,7 +109,7 @@ namespace Butzelaar.Generic.Logging
                     return logger.Fatal;
             }
 
-            throw new ArgumentException(String.Format("Level specified not valid: {0}", level.ToString()));
+            throw new ArgumentException(String.Format("Level specified not valid: {0}", level));
         }
 
         #endregion
