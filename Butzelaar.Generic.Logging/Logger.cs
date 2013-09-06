@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using Butzelaar.Generic.Logging.Enumeration;
 using log4net;
@@ -43,13 +44,13 @@ namespace Butzelaar.Generic.Logging
         /// <param name="ex">The exception.</param>
         public static void Log(Level level, string message, string details, Exception ex)
         {
-            var logger = GetCallingAssemblyName();
-
-            SetDetailsProperty(details);
-            SetStackTraceProperty();
+            var logger = GetEntryAssemblyName();
             var loggerObject = LogManager.GetLogger(logger);
             var logMethod = GetLogMethodFromLevel(loggerObject, level);
 
+            SetDetailsProperty(details);
+            SetStackTraceProperty();
+            // Thread-safe. Using GlobalContext isn't
             logMethod(message, ex);
         }
 
@@ -58,23 +59,23 @@ namespace Butzelaar.Generic.Logging
         #region Helpers
 
         /// <summary>
-        ///     Gets the name of the calling assembly.
+        ///     Gets the name of the entry assembly.
         /// </summary>
         /// <returns>
         ///     The name of the calling assembly
         /// </returns>
-        internal static string GetCallingAssemblyName()
+        private static string GetEntryAssemblyName()
         {
-            return Assembly.GetCallingAssembly().GetName().Name;
+            return Assembly.GetEntryAssembly().GetName().Name;
         }
 
         /// <summary>
         ///     Sets the details property.
         /// </summary>
         /// <param name="details">The details.</param>
-        internal static void SetDetailsProperty(string details)
+        private static void SetDetailsProperty(string details)
         {
-            GlobalContext.Properties["details"] = details ?? string.Empty;
+            ThreadContext.Properties["details"] = details ?? string.Empty;
         }
 
         /// <summary>
@@ -82,7 +83,7 @@ namespace Butzelaar.Generic.Logging
         /// </summary>
         private static void SetStackTraceProperty()
         {
-            GlobalContext.Properties["StackTrace"] = new StackTrace();
+            ThreadContext.Properties["StackTrace"] = new StackTrace();
         }
 
         /// <summary>
@@ -93,7 +94,7 @@ namespace Butzelaar.Generic.Logging
         /// <returns>
         ///     The method used for logging
         /// </returns>
-        internal static Action<object, Exception> GetLogMethodFromLevel(ILog logger, Level level)
+        private static Action<object, Exception> GetLogMethodFromLevel(ILog logger, Level level)
         {
             switch (level)
             {

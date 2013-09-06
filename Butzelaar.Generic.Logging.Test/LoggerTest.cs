@@ -47,37 +47,45 @@ namespace Butzelaar.Generic.Logging.Test
         [TestMethod]
         public void GetCallingAssembly_LogginTest()
         {
-            string retVal = Logger.GetCallingAssemblyName();
-            Assert.AreEqual("Butzelaar.Generic.Logging.Test", retVal);
+            var privateType = new PrivateType(typeof(Logger));
+            var retVal = (string)privateType.InvokeStatic("GetEntryAssemblyName");
+
+            Assert.AreEqual("Microsoft.VisualStudio.QualityTools.UnitTestFramework", retVal);
         }
 
         [TestMethod]
         public void SetDetailsProperty_TextDetails()
         {
             const string details = "Test details";
-            Logger.SetDetailsProperty(details);
-            Assert.AreEqual(GlobalContext.Properties["details"], details);
+            var privateType = new PrivateType(typeof(Logger));
+            privateType.InvokeStatic("SetDetailsProperty", details);
+
+            Assert.AreEqual(ThreadContext.Properties["details"].ToString(), details);
         }
 
         [TestMethod]
         public void SetDetailsProperty_NullDetails()
         {
-            Logger.SetDetailsProperty(null);
-            Assert.AreEqual(GlobalContext.Properties["details"], string.Empty);
+            var privateType = new PrivateType(typeof(Logger));
+            privateType.InvokeStatic("SetDetailsProperty", new object[] { null } );
+
+            Assert.AreEqual(ThreadContext.Properties["details"].ToString(), string.Empty);
         }
 
         [TestMethod]
-        [ExpectedException(typeof (NullReferenceException))]
+        [ExpectedException(typeof(NullReferenceException))]
         public void GetLogMethodFromLevel_LogNull()
         {
-            Logger.GetLogMethodFromLevel(null, Level.Error);
+            var privateType = new PrivateType(typeof(Logger));
+            privateType.InvokeStatic("GetLogMethodFromLevel", null, Level.Error);
         }
 
         [TestMethod]
         public void GetLogMethodFromLevel_LevelDebug()
         {
             ILog logger = LogManager.GetLogger(string.Empty);
-            Logger.GetLogMethodFromLevel(logger, Level.Debug);
+            var privateType = new PrivateType(typeof(Logger));
+            privateType.InvokeStatic("GetLogMethodFromLevel", logger, Level.Debug);
         }
 
         #endregion
