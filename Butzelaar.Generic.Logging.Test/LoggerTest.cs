@@ -48,9 +48,9 @@ namespace Butzelaar.Generic.Logging.Test
         public void GetCallingAssembly_LogginTest()
         {
             var privateType = new PrivateType(typeof(Logger));
-            var retVal = (string)privateType.InvokeStatic("GetEntryAssemblyName");
+            var response = privateType.InvokeStatic("GetEntryAssemblyName");
 
-            Assert.AreEqual("Microsoft.VisualStudio.QualityTools.UnitTestFramework", retVal);
+            Assert.AreEqual(response, "Butzelaar.Generic.Logging");
         }
 
         [TestMethod]

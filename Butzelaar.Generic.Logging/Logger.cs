@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using Butzelaar.Generic.Logging.Enumeration;
 using log4net;
@@ -19,30 +18,9 @@ namespace Butzelaar.Generic.Logging
         /// </summary>
         /// <param name="level">The level.</param>
         /// <param name="message">The message.</param>
-        public static void Log(Level level, string message)
-        {
-            Log(level, message, null);
-        }
-
-        /// <summary>
-        /// Writes debug information
-        /// </summary>
-        /// <param name="level">The level.</param>
-        /// <param name="message">The message.</param>
-        /// <param name="details">The details.</param>
-        public static void Log(Level level, string message, string details)
-        {
-            Log(level, message, details, null);
-        }
-
-        /// <summary>
-        ///  Writes debug information
-        /// </summary>
-        /// <param name="level">The level.</param>
-        /// <param name="message">The message.</param>
         /// <param name="details">The details.</param>
         /// <param name="ex">The exception.</param>
-        public static void Log(Level level, string message, string details, Exception ex)
+        public static void Log(Level level, string message, string details = null, Exception ex = null)
         {
             var logger = GetEntryAssemblyName();
             var loggerObject = LogManager.GetLogger(logger);
@@ -50,7 +28,7 @@ namespace Butzelaar.Generic.Logging
 
             SetDetailsProperty(details);
             SetStackTraceProperty();
-            // Thread-safe. Using GlobalContext isn't
+            
             logMethod(message, ex);
         }
 
@@ -66,7 +44,9 @@ namespace Butzelaar.Generic.Logging
         /// </returns>
         private static string GetEntryAssemblyName()
         {
-            return Assembly.GetEntryAssembly().GetName().Name;
+            var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+
+            return assembly.GetName().Name;
         }
 
         /// <summary>
